@@ -55,6 +55,7 @@
   --space-5:20px; --space-6:24px; --space-7:28px; --space-8:32px; --space-10:40px;
   --sidebar-w:232px;
   --topbar-h:64px;
+  --bottomnav-h:58px;
   --font: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --mono: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --dur-fast:120ms; --dur:180ms;
@@ -119,7 +120,7 @@
    RESET
    ============================================================ */
 *,*::before,*::after{box-sizing:border-box;}
-html,body{height:100%;}
+html,body{height:100%; background:var(--bg);}
 body{
   margin:0;
   font-family:var(--font);
@@ -154,9 +155,10 @@ img{max-width:100%;display:block;}
 .app-shell{min-height:100vh; display:flex; flex-direction:column;}
 
 .topbar{
-  height:var(--topbar-h);
+  height:calc(var(--topbar-h) + env(safe-area-inset-top));
+  box-sizing:border-box;
   display:flex; align-items:center; gap:var(--space-3);
-  padding:0 var(--space-5);
+  padding:env(safe-area-inset-top) calc(var(--space-5) + env(safe-area-inset-right)) 0 calc(var(--space-5) + env(safe-area-inset-left));
   background:var(--surface);
   border-bottom:1px solid var(--border);
   position:sticky; top:0; z-index:40;
@@ -185,7 +187,8 @@ img{max-width:100%;display:block;}
   position:fixed; top:0; left:0; bottom:0; width:280px; max-width:86vw;
   background:var(--surface); z-index:70; box-shadow:var(--shadow-lg);
   transform:translateX(-100%); transition:transform var(--dur) var(--ease);
-  display:flex; flex-direction:column; padding:var(--space-5);
+  display:flex; flex-direction:column;
+  padding:calc(var(--space-5) + env(safe-area-inset-top)) var(--space-5) calc(var(--space-5) + env(safe-area-inset-bottom)) calc(var(--space-5) + env(safe-area-inset-left));
 }
 .drawer.is-open{transform:translateX(0);}
 .drawer-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--space-6);}
@@ -204,7 +207,7 @@ img{max-width:100%;display:block;}
 .body-layout{flex:1; display:flex; width:100%; max-width:1320px; margin:0 auto; align-items:flex-start;}
 .side-rail{
   width:var(--sidebar-w); flex-shrink:0; padding:var(--space-6) var(--space-4);
-  position:sticky; top:var(--topbar-h); display:none; flex-direction:column; gap:var(--space-6);
+  position:sticky; top:calc(var(--topbar-h) + env(safe-area-inset-top)); display:none; flex-direction:column; gap:var(--space-6);
 }
 .side-rail.has-content{display:flex;}
 .side-rail-group-label{font-size:11px; font-weight:700; letter-spacing:.06em; color:var(--text-3); padding:0 var(--space-3); margin-bottom:var(--space-2); text-transform:uppercase;}
@@ -220,7 +223,8 @@ img{max-width:100%;display:block;}
 .view{display:none;}
 .view.is-visible{display:block;}
 
-/* Mobile sub-tabs (shown instead of side-rail on small screens) */
+/* Mobile sub-tabs — superseded by the persistent bottom nav below; element stays
+   in the DOM but is never shown, so nothing else needs to change. */
 .subtabs{display:none; gap:var(--space-2); overflow-x:auto; padding:var(--space-4) var(--space-5) 0; -webkit-overflow-scrolling:touch;}
 .subtabs::-webkit-scrollbar{display:none;}
 .subtab{
@@ -229,10 +233,33 @@ img{max-width:100%;display:block;}
 }
 .subtab.is-active{background:var(--primary); color:var(--primary-fg); border-color:var(--primary);}
 
+/* ============================================================
+   BOTTOM NAV (mobile / installed app)
+   ============================================================ */
+.bottom-nav{
+  display:none;
+  position:fixed; left:0; right:0; bottom:0; z-index:80;
+  background:var(--surface); border-top:1px solid var(--border);
+  padding-bottom:env(safe-area-inset-bottom);
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right);
+}
+.bottom-nav-inner{display:flex; height:var(--bottomnav-h);}
+.bottom-nav-item{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  background:none; border:none; color:var(--text-3); font-size:10.5px; font-weight:600; cursor:pointer;
+  min-width:0; padding:4px 2px;
+}
+.bottom-nav-item svg{width:21px; height:21px;}
+.bottom-nav-item span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%;}
+.bottom-nav-item.is-active{color:var(--primary);}
+
 @media (max-width: 900px){
   .side-rail, .side-rail.has-content{display:none;}
-  .subtabs{display:flex;}
-  .view-container{padding:var(--space-4) var(--space-4) var(--space-10);}
+  .bottom-nav{display:block;}
+  .view-container{
+    padding:var(--space-4) var(--space-4) calc(var(--bottomnav-h) + env(safe-area-inset-bottom) + var(--space-6));
+  }
 }
 
 /* ============================================================
@@ -514,8 +541,10 @@ kbd.key-hint{
 @media(max-width:480px){ .profile-row{flex-direction:column; align-items:stretch;} .profile-avatar{margin:0 auto;} }
 @media(max-width:480px){
   .settings-row{flex-wrap:wrap;}
-  .settings-row .sr-control{flex-basis:100%; margin-left:48px; margin-top:8px;}
-  .settings-row select.input{width:100%;}
+  .settings-row .sr-control{
+    flex-basis:auto; width:calc(100% - 48px); margin-left:48px; margin-top:8px; box-sizing:border-box;
+  }
+  .settings-row select.input{width:100%; box-sizing:border-box;}
 }
 
 /* ============================================================
@@ -542,7 +571,8 @@ kbd.key-hint{
 .modal{
   background:var(--surface); width:100%; max-width:480px; max-height:90vh; overflow-y:auto;
   border-radius:var(--radius-lg) var(--radius-lg) 0 0; box-shadow:var(--shadow-lg);
-  transform:translateY(24px); transition:transform var(--dur) var(--ease); padding:var(--space-6);
+  transform:translateY(24px); transition:transform var(--dur) var(--ease);
+  padding:var(--space-6) calc(var(--space-6) + env(safe-area-inset-right)) calc(var(--space-6) + env(safe-area-inset-bottom)) calc(var(--space-6) + env(safe-area-inset-left));
 }
 @media (min-width:640px){ .modal{border-radius:var(--radius-lg); transform:translateY(0) scale(.97);} }
 .modal-backdrop.is-open .modal{transform:translateY(0) scale(1);}
@@ -561,7 +591,13 @@ kbd.key-hint{
 /* ============================================================
    TOASTS
    ============================================================ */
-.toast-region{position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:8px; width:min(360px,92vw); align-items:center;}
+.toast-region{
+  position:fixed; bottom:calc(20px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); z-index:200;
+  display:flex; flex-direction:column; gap:8px; width:min(360px,92vw); align-items:center;
+}
+@media (max-width:900px){
+  .toast-region{bottom:calc(var(--bottomnav-h) + env(safe-area-inset-bottom) + 12px);}
+}
 .toast{
   background:var(--text); color:var(--bg); padding:11px 16px; border-radius:var(--radius-sm); font-size:13.5px; font-weight:500;
   box-shadow:var(--shadow-lg); display:flex; align-items:center; gap:10px; width:100%;
@@ -575,7 +611,8 @@ kbd.key-hint{
    INSTALL BANNER
    ============================================================ */
 .install-banner{
-  position:fixed; left:16px; right:16px; bottom:16px; z-index:150;
+  position:fixed; left:calc(16px + env(safe-area-inset-left)); right:calc(16px + env(safe-area-inset-right));
+  bottom:calc(16px + env(safe-area-inset-bottom)); z-index:150;
   max-width:480px; margin:0 auto;
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
   box-shadow:var(--shadow-lg); padding:14px 14px 14px 16px;
@@ -592,6 +629,9 @@ kbd.key-hint{
 @media(max-width:420px){
   .install-banner{flex-wrap:wrap;}
   .install-banner-actions{flex-basis:100%; justify-content:flex-end; margin-top:4px;}
+}
+@media (max-width:900px){
+  .install-banner{bottom:calc(var(--bottomnav-h) + env(safe-area-inset-bottom) + 12px);}
 }
 
 /* ============================================================
@@ -662,6 +702,32 @@ kbd.key-hint{
         About</button></li>
     </ul>
     <div class="drawer-foot">Launchpad · 100% local &amp; offline<br>No accounts. No tracking. No server.</div>
+  </nav>
+
+  <!-- BOTTOM NAV (mobile) -->
+  <nav class="bottom-nav" id="bottomNav" aria-label="Primary navigation">
+    <div class="bottom-nav-inner">
+      <button class="bottom-nav-item" data-nav="home">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+        <span>Home</span>
+      </button>
+      <button class="bottom-nav-item" data-nav="links">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.5-1.5"/></svg>
+        <span>Links</span>
+      </button>
+      <button class="bottom-nav-item" data-nav="categories">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span>Categories</span>
+      </button>
+      <button class="bottom-nav-item" data-nav="wow">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+        <span>WOW</span>
+      </button>
+      <button class="bottom-nav-item" data-nav="settings">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
+      </button>
+    </div>
   </nav>
 
   <!-- BODY LAYOUT -->
@@ -1295,6 +1361,9 @@ function navigateTo(view){
   $all(".drawer-nav-item").forEach(function(b){
     b.classList.toggle("is-active", b.getAttribute("data-nav") === view);
   });
+  $all(".bottom-nav-item").forEach(function(b){
+    b.classList.toggle("is-active", b.getAttribute("data-nav") === view);
+  });
 
   renderSideRail(view);
   renderSubtabs(view);
@@ -1352,25 +1421,11 @@ function renderSideRail(view){
 }
 
 function renderSubtabs(view){
+  // Superseded by the persistent bottom nav (#bottomNav). Kept as a no-op
+  // rather than fully removed, in case a future view needs contextual sub-tabs.
   var bar = $("#subtabs");
   bar.innerHTML = "";
-  var map = {
-    links: [{label:"Home",target:"home"},{label:"Links",target:"links"},{label:"Categories",target:"categories"},{label:"WOW List",target:"wow"},{label:"Settings",target:"settings"}],
-    categories: [{label:"Home",target:"home"},{label:"Links",target:"links"},{label:"Categories",target:"categories"},{label:"WOW List",target:"wow"},{label:"Settings",target:"settings"}],
-    wow: [{label:"Home",target:"home"},{label:"Links",target:"links"},{label:"Categories",target:"categories"},{label:"WOW List",target:"wow"},{label:"Settings",target:"settings"}],
-    settings: [{label:"Home",target:"home"},{label:"Links",target:"links"},{label:"Categories",target:"categories"},{label:"WOW List",target:"wow"},{label:"Settings",target:"settings"},{label:"About",target:"about"}],
-    about: [{label:"Home",target:"home"},{label:"Settings",target:"settings"}]
-  };
-  var items = map[view];
-  if(!items){ bar.style.display = "none"; return; }
-  bar.style.display = "flex";
-  items.forEach(function(it){
-    var b = el("button", {
-      class: "subtab" + (it.target === view ? " is-active" : ""),
-      onclick: function(){ navigateTo(it.target); }
-    }, [it.label]);
-    bar.appendChild(b);
-  });
+  bar.style.display = "none";
 }
 
 /* ============================================================
