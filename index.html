@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Launchpad — Your Work Links</title>
 <meta name="description" content="A private, offline-first launcher for the tools and links you use every day.">
+
+<!-- PWA: manifest + icons -->
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+<link rel="icon" type="image/x-icon" href="./icons/favicon.ico">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+
+<!-- PWA: theming + iOS home-screen behavior -->
+<meta name="theme-color" content="#F5F6FA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0D0E13" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Launchpad">
 <style>
 /* ============================================================
    TOKENS
@@ -434,6 +448,49 @@ kbd.key-hint{
 .cmr-actions{display:flex; gap:2px;}
 
 /* ============================================================
+   WOW LIST
+   ============================================================ */
+.wow-list{display:flex; flex-direction:column; gap:12px;}
+.wow-item{
+  border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--surface); overflow:hidden;
+}
+.wow-item.is-dragging{opacity:.4;}
+.wow-item.drag-over-top{box-shadow:inset 0 2px 0 var(--primary);}
+.wow-item.drag-over-bottom{box-shadow:inset 0 -2px 0 var(--primary);}
+.wow-item-header{display:flex; align-items:flex-start; gap:10px; padding:14px 16px;}
+.wow-chevron-btn{
+  flex-shrink:0; width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center;
+  background:none; border:none; color:var(--text-2); cursor:pointer; margin-top:1px;
+}
+.wow-chevron-btn:hover{background:var(--surface-hover); color:var(--text);}
+.wow-chevron-btn svg{transition:transform var(--dur) var(--ease);}
+.wow-item.is-collapsed .wow-chevron-btn svg{transform:rotate(-90deg);}
+.wow-item-title-wrap{flex:1; min-width:0; padding-top:2px;}
+.wow-item-title{font-weight:600; font-size:14.5px;}
+.wow-item-details{font-size:12.5px; color:var(--text-2); margin-top:3px; line-height:1.5;}
+.wow-item-meta{font-size:11.5px; color:var(--text-3); margin-top:5px;}
+.wow-item-actions{display:flex; align-items:center; gap:2px; flex-shrink:0;}
+.wow-subitems{border-top:1px solid var(--border); background:var(--surface-2);}
+.wow-subitem-row{display:flex; align-items:flex-start; gap:10px; padding:11px 16px 11px 48px;}
+.wow-subitem-row + .wow-subitem-row{border-top:1px solid var(--border);}
+.wow-subitem-row.is-dragging{opacity:.4;}
+.wow-subitem-row.drag-over-top{box-shadow:inset 0 2px 0 var(--primary);}
+.wow-subitem-row.drag-over-bottom{box-shadow:inset 0 -2px 0 var(--primary);}
+.wow-subitem-bullet{width:6px; height:6px; border-radius:50%; background:var(--text-3); flex-shrink:0; margin-top:8px;}
+.wow-subitem-title{font-size:13.5px; font-weight:500;}
+.wow-subitem-details{font-size:12px; color:var(--text-3); margin-top:2px; line-height:1.5;}
+.wow-add-sub-row{padding:4px 16px 12px 48px;}
+.wow-add-sub-btn{
+  font-size:12.5px; font-weight:600; color:var(--text-2); background:none; border:none; cursor:pointer;
+  display:inline-flex; align-items:center; gap:6px; padding:6px 4px;
+}
+.wow-add-sub-btn:hover{color:var(--primary);}
+@media(max-width:600px){
+  .wow-subitem-row{padding-left:36px;}
+  .wow-add-sub-row{padding-left:36px;}
+}
+
+/* ============================================================
    CARDS / SETTINGS
    ============================================================ */
 .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:var(--space-6); margin-bottom:var(--space-5);}
@@ -515,6 +572,29 @@ kbd.key-hint{
 @keyframes toast-in{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
 
 /* ============================================================
+   INSTALL BANNER
+   ============================================================ */
+.install-banner{
+  position:fixed; left:16px; right:16px; bottom:16px; z-index:150;
+  max-width:480px; margin:0 auto;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg); padding:14px 14px 14px 16px;
+  display:flex; align-items:center; gap:12px;
+  animation:install-in var(--dur) var(--ease);
+}
+@keyframes install-in{from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);}}
+.install-banner[hidden]{display:none;}
+.install-banner-icon{font-size:26px; flex-shrink:0;}
+.install-banner-text{flex:1; min-width:0;}
+.install-banner-title{font-weight:700; font-size:13.5px;}
+.install-banner-desc{font-size:12px; color:var(--text-2); margin-top:1px;}
+.install-banner-actions{display:flex; align-items:center; gap:2px; flex-shrink:0;}
+@media(max-width:420px){
+  .install-banner{flex-wrap:wrap;}
+  .install-banner-actions{flex-basis:100%; justify-content:flex-end; margin-top:4px;}
+}
+
+/* ============================================================
    ABOUT
    ============================================================ */
 .about-hero{display:flex; align-items:center; gap:var(--space-4); margin-bottom:var(--space-6);}
@@ -571,6 +651,9 @@ kbd.key-hint{
       <li><button class="drawer-nav-item" data-nav="categories" data-icon="categories">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
         Categories</button></li>
+      <li><button class="drawer-nav-item" data-nav="wow" data-icon="wow">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+        WOW List</button></li>
       <li><button class="drawer-nav-item" data-nav="settings" data-icon="settings">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Settings</button></li>
@@ -681,6 +764,21 @@ kbd.key-hint{
         <div id="categoriesListWrap" style="margin-top:var(--space-6);"></div>
       </section>
 
+      <!-- WOW LIST VIEW -->
+      <section class="view" id="view-wow" aria-labelledby="wowHeading">
+        <div class="page-head" style="display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-4); flex-wrap:wrap;">
+          <div>
+            <h1 id="wowHeading">WOW List</h1>
+            <p class="subtle">Your team's way of working — organized as an outline of items and sub-items.</p>
+          </div>
+          <button class="btn btn-primary" data-action="add-wow-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Item
+          </button>
+        </div>
+        <div id="wowListWrap" style="margin-top:var(--space-6);"></div>
+      </section>
+
       <!-- SETTINGS VIEW -->
       <section class="view" id="view-settings" aria-labelledby="settingsHeading">
         <div class="page-head">
@@ -747,6 +845,12 @@ kbd.key-hint{
             <div class="sr-control">
               <label class="switch"><input type="checkbox" id="settingShowRecent"><span class="track"><span class="thumb"></span></span></label>
             </div>
+          </div>
+
+          <div class="settings-row" id="installSettingsRow">
+            <div class="sr-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+            <div class="sr-text"><div class="sr-title">Install app</div><div class="sr-desc" id="installSettingsDesc">Add Launchpad to your home screen for quick, app-like access</div></div>
+            <div class="sr-control"><button class="btn btn-sm" id="installSettingsBtn">Install</button></div>
           </div>
         </div>
 
@@ -832,6 +936,21 @@ kbd.key-hint{
 <!-- TOAST REGION -->
 <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
 
+<!-- INSTALL BANNER -->
+<div class="install-banner" id="installBanner" role="region" aria-label="Install app" hidden>
+  <div class="install-banner-icon" aria-hidden="true">🚀</div>
+  <div class="install-banner-text">
+    <div class="install-banner-title" id="installBannerTitle">Install Launchpad</div>
+    <div class="install-banner-desc" id="installBannerDesc">Add it to your home screen for one-tap access, even offline.</div>
+  </div>
+  <div class="install-banner-actions">
+    <button class="btn btn-primary btn-sm" id="installBannerBtn">Install</button>
+    <button class="icon-btn" id="installBannerDismiss" aria-label="Dismiss install prompt">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+</div>
+
 <script>
 (function(){
 "use strict";
@@ -873,6 +992,31 @@ function defaultData(){
       { id: uid("lnk"), name:"Figma", url:"https://figma.com", categoryId:catTools, icon:"", iconType:"emoji", color:"purple", favorite:false, order:0, lastUsed:0, useCount:0, tags:["design","mockups","ui","prototype"] }
     ],
     recent: [],
+    wowItems: [
+      {
+        id: uid("wow"), title:"Code Review Standards", details:"Every change gets a second pair of eyes before it ships.", order:0, expanded:true,
+        subItems: [
+          { id: uid("sub"), title:"All PRs require at least 1 approval before merge", details:"", order:0 },
+          { id: uid("sub"), title:"Use conventional commit messages", details:"e.g. feat:, fix:, chore: — keeps the changelog readable.", order:1 },
+          { id: uid("sub"), title:"Leave the codebase cleaner than you found it", details:"", order:2 }
+        ]
+      },
+      {
+        id: uid("wow"), title:"Daily Standup", details:"Keep it short — 15 minutes, same time every day.", order:1, expanded:false,
+        subItems: [
+          { id: uid("sub"), title:"What did you do yesterday?", details:"", order:0 },
+          { id: uid("sub"), title:"What are you doing today?", details:"", order:1 },
+          { id: uid("sub"), title:"Any blockers?", details:"", order:2 }
+        ]
+      },
+      {
+        id: uid("wow"), title:"Definition of Done", details:"", order:2, expanded:false,
+        subItems: [
+          { id: uid("sub"), title:"Tests written and passing", details:"", order:0 },
+          { id: uid("sub"), title:"Reviewed and approved", details:"", order:1 }
+        ]
+      }
+    ],
     settings: {
       theme: "system",
       defaultView: "quickAccess",
@@ -936,6 +1080,21 @@ function migrate(d){
     if(c.order === undefined) c.order = i;
     if(c.color === undefined) c.color = "gray";
     if(c.icon === undefined) c.icon = "📁";
+  });
+  d.wowItems = Array.isArray(d.wowItems) ? d.wowItems : [];
+  d.wowItems.forEach(function(item, i){
+    if(item.id === undefined) item.id = uid("wow");
+    if(item.order === undefined) item.order = i;
+    if(item.title === undefined) item.title = "Untitled item";
+    if(item.details === undefined) item.details = "";
+    if(item.expanded === undefined) item.expanded = true;
+    item.subItems = Array.isArray(item.subItems) ? item.subItems : [];
+    item.subItems.forEach(function(sub, j){
+      if(sub.id === undefined) sub.id = uid("sub");
+      if(sub.order === undefined) sub.order = j;
+      if(sub.title === undefined) sub.title = "Untitled sub-item";
+      if(sub.details === undefined) sub.details = "";
+    });
   });
   return d;
 }
@@ -1071,6 +1230,7 @@ var NAV_ITEMS = [
   { key:"home", label:"Home" },
   { key:"links", label:"Manage Links" },
   { key:"categories", label:"Categories" },
+  { key:"wow", label:"WOW List" },
   { key:"settings", label:"Settings" },
   { key:"about", label:"About" }
 ];
@@ -1094,6 +1254,15 @@ var SIDE_RAIL_CONFIG = {
         {key:"links-sub", label:"Links", target:"links"},
         {key:"categories", label:"Categories", target:"categories"},
         {key:"order-sub2", label:"Order", target:"categories"}
+      ]}
+    ]
+  },
+  wow: {
+    groups:[
+      { label:"Manage", items:[
+        {key:"links-sub4", label:"Links", target:"links"},
+        {key:"categories-sub4", label:"Categories", target:"categories"},
+        {key:"wow-sub", label:"WOW List", target:"wow"}
       ]}
     ]
   },
@@ -1134,6 +1303,7 @@ function navigateTo(view){
   if(view === "home") renderHome();
   if(view === "links") renderLinksView();
   if(view === "categories") renderCategoriesView();
+  if(view === "wow") renderWowView();
   if(view === "settings") renderSettingsView();
   if(view === "about") renderAboutView();
 
@@ -1185,9 +1355,10 @@ function renderSubtabs(view){
   var bar = $("#subtabs");
   bar.innerHTML = "";
   var map = {
-    links: [{label:"Home",target:"home"},{label:"Links",target:"links"},{label:"Categories",target:"categories"},{label:"Settings",target:"settings"}],
-    categories: [{label:"Home",target:"home"},{label:"Links",target:"links"},{label:"Categories",target:"categories"},{label:"Settings",target:"settings"}],
-    settings: [{label:"Home",target:"home"},{label:"Links",target:"links"},{label:"Categories",target:"categories"},{label:"Settings",target:"settings"},{label:"About",target:"about"}],
+    links: [{label:"Home",target:"home"},{label:"Links",target:"links"},{label:"Categories",target:"categories"},{label:"WOW List",target:"wow"},{label:"Settings",target:"settings"}],
+    categories: [{label:"Home",target:"home"},{label:"Links",target:"links"},{label:"Categories",target:"categories"},{label:"WOW List",target:"wow"},{label:"Settings",target:"settings"}],
+    wow: [{label:"Home",target:"home"},{label:"Links",target:"links"},{label:"Categories",target:"categories"},{label:"WOW List",target:"wow"},{label:"Settings",target:"settings"}],
+    settings: [{label:"Home",target:"home"},{label:"Links",target:"links"},{label:"Categories",target:"categories"},{label:"WOW List",target:"wow"},{label:"Settings",target:"settings"},{label:"About",target:"about"}],
     about: [{label:"Home",target:"home"},{label:"Settings",target:"settings"}]
   };
   var items = map[view];
@@ -1481,7 +1652,11 @@ function iconSvg(name){
     search:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
     warn:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
     upload:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
-    close:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+    close:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    chevron:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
+    addsub:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9M4 12h5"/><circle cx="18" cy="15" r="4"/><line x1="18" y1="13.4" x2="18" y2="16.6"/><line x1="16.4" y1="15" x2="19.6" y2="15"/></svg>',
+    wow:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>',
+    plus:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
   };
   var wrap = document.createElement("span");
   wrap.innerHTML = svgs[name] || "";
@@ -2168,6 +2343,289 @@ function confirmDeleteCategory(catId){
 }
 
 /* ============================================================
+   WOW LIST (Way of Working)
+   ============================================================ */
+function renderWowView(){
+  var wrap = $("#wowListWrap");
+  wrap.innerHTML = "";
+  var items = state.wowItems.slice().sort(function(a,b){ return a.order - b.order; });
+
+  if(items.length === 0){
+    wrap.appendChild(emptyState({
+      icon: iconSvg("wow"),
+      title:"No WOW items yet",
+      desc:"Start building your team's way of working. Add your first item, then break it down into sub-items.",
+      actionLabel:"+ Add Item",
+      onAction:function(){ openWowItemModal(); }
+    }));
+    return;
+  }
+
+  var list = el("div", { class:"wow-list", id:"wowListContainer" }, []);
+  items.forEach(function(item){ list.appendChild(wowItemNode(item)); });
+  wrap.appendChild(list);
+  enableWowItemDragReorder(list);
+}
+
+function wowItemNode(item){
+  var container = el("div", { class:"wow-item" + (item.expanded ? "" : " is-collapsed"), "data-id":item.id }, []);
+
+  var header = el("div", { class:"wow-item-header" }, []);
+  header.appendChild(el("span", {
+    class:"drag-handle", "aria-label":"Drag to reorder " + item.title, tabindex:"0", draggable:"true", style:"margin-top:3px;"
+  }, [iconSvg("drag")]));
+
+  header.appendChild(el("button", {
+    class:"wow-chevron-btn",
+    "aria-expanded": item.expanded ? "true" : "false",
+    "aria-label": (item.expanded ? "Collapse " : "Expand ") + item.title,
+    onclick:function(){ item.expanded = !item.expanded; saveData(); renderWowView(); }
+  }, [iconSvg("chevron")]));
+
+  var subCount = item.subItems.length;
+  var titleWrap = el("div", { class:"wow-item-title-wrap" }, [
+    el("div", { class:"wow-item-title" }, [item.title])
+  ]);
+  if(item.details) titleWrap.appendChild(el("div", { class:"wow-item-details" }, [item.details]));
+  titleWrap.appendChild(el("div", { class:"wow-item-meta" }, [subCount + (subCount === 1 ? " sub-item" : " sub-items")]));
+  header.appendChild(titleWrap);
+
+  header.appendChild(el("div", { class:"wow-item-actions" }, [
+    el("button", { class:"icon-btn", "aria-label":"Add sub-item to " + item.title, title:"Add sub-item", onclick:function(){ openWowSubItemModal(item.id); } }, [iconSvg("addsub")]),
+    el("button", { class:"icon-btn", "aria-label":"Edit " + item.title, title:"Edit", onclick:function(){ openWowItemModal(item.id); } }, [iconSvg("edit")]),
+    el("button", { class:"icon-btn", "aria-label":"Delete " + item.title, title:"Delete", onclick:function(){ confirmDeleteWowItem(item.id); } }, [iconSvg("trash")])
+  ]));
+
+  container.appendChild(header);
+
+  if(item.expanded){
+    var subWrap = el("div", { class:"wow-subitems" }, []);
+    var subs = item.subItems.slice().sort(function(a,b){ return a.order - b.order; });
+    subs.forEach(function(sub){ subWrap.appendChild(wowSubItemNode(item, sub)); });
+    subWrap.appendChild(el("div", { class:"wow-add-sub-row" }, [
+      el("button", { class:"wow-add-sub-btn", onclick:function(){ openWowSubItemModal(item.id); } }, [iconSvg("plus"), "Add sub-item"])
+    ]));
+    container.appendChild(subWrap);
+    enableWowSubDragReorder(subWrap, item.id);
+  }
+
+  return container;
+}
+
+function wowSubItemNode(parentItem, sub){
+  var row = el("div", { class:"wow-subitem-row", "data-id":sub.id }, []);
+  row.appendChild(el("span", {
+    class:"drag-handle", "aria-label":"Drag to reorder " + sub.title, tabindex:"0", draggable:"true", style:"margin-top:2px;"
+  }, [iconSvg("drag")]));
+  row.appendChild(el("span", { class:"wow-subitem-bullet", "aria-hidden":"true" }));
+  var body = el("div", { style:"flex:1; min-width:0;" }, [
+    el("div", { class:"wow-subitem-title" }, [sub.title])
+  ]);
+  if(sub.details) body.appendChild(el("div", { class:"wow-subitem-details" }, [sub.details]));
+  row.appendChild(body);
+  row.appendChild(el("div", { class:"wow-item-actions" }, [
+    el("button", { class:"icon-btn", "aria-label":"Edit " + sub.title, title:"Edit", onclick:function(){ openWowSubItemModal(parentItem.id, sub.id); } }, [iconSvg("edit")]),
+    el("button", { class:"icon-btn", "aria-label":"Delete " + sub.title, title:"Delete", onclick:function(){ confirmDeleteWowSubItem(parentItem.id, sub.id); } }, [iconSvg("trash")])
+  ]));
+  return row;
+}
+
+/* Generic drag-and-drop reorder helper (mouse + keyboard), scoped to a container and row selector */
+function enableDragReorder(container, rowSelector, onReorder){
+  var draggingRow = null;
+  $all(rowSelector, container).forEach(function(row){
+    var handle = row.querySelector(".drag-handle");
+    if(!handle) return;
+    handle.addEventListener("dragstart", function(e){
+      draggingRow = row;
+      row.classList.add("is-dragging");
+      try{ e.dataTransfer.setData("text/plain", row.getAttribute("data-id")); }catch(err){}
+    });
+    handle.addEventListener("dragend", function(){
+      row.classList.remove("is-dragging");
+      $all(rowSelector, container).forEach(function(r){ r.classList.remove("drag-over-top","drag-over-bottom"); });
+      draggingRow = null;
+      onReorder();
+    });
+    row.addEventListener("dragover", function(e){
+      e.preventDefault();
+      if(!draggingRow || draggingRow === row) return;
+      var rect = row.getBoundingClientRect();
+      var isAfter = (e.clientY - rect.top) > rect.height/2;
+      row.classList.toggle("drag-over-bottom", isAfter);
+      row.classList.toggle("drag-over-top", !isAfter);
+    });
+    row.addEventListener("dragleave", function(){ row.classList.remove("drag-over-top","drag-over-bottom"); });
+    row.addEventListener("drop", function(e){
+      e.preventDefault();
+      if(!draggingRow || draggingRow === row) return;
+      var rect = row.getBoundingClientRect();
+      var isAfter = (e.clientY - rect.top) > rect.height/2;
+      if(isAfter) row.parentNode.insertBefore(draggingRow, row.nextSibling);
+      else row.parentNode.insertBefore(draggingRow, row);
+      row.classList.remove("drag-over-top","drag-over-bottom");
+    });
+    handle.addEventListener("keydown", function(e){
+      if(e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+      e.preventDefault();
+      var sibling = e.key === "ArrowUp" ? row.previousElementSibling : row.nextElementSibling;
+      while(sibling && !sibling.matches(rowSelector)){
+        sibling = e.key === "ArrowUp" ? sibling.previousElementSibling : sibling.nextElementSibling;
+      }
+      if(!sibling) return;
+      if(e.key === "ArrowUp") row.parentNode.insertBefore(row, sibling);
+      else row.parentNode.insertBefore(row, sibling.nextSibling);
+      handle.focus();
+      onReorder();
+    });
+  });
+}
+
+function enableWowItemDragReorder(container){
+  enableDragReorder(container, ".wow-item", function(){
+    var ids = $all(".wow-item", container).map(function(r){ return r.getAttribute("data-id"); });
+    ids.forEach(function(id, idx){
+      var it = state.wowItems.find(function(w){ return w.id === id; });
+      if(it) it.order = idx;
+    });
+    saveData();
+  });
+}
+
+function enableWowSubDragReorder(subWrap, parentId){
+  enableDragReorder(subWrap, ".wow-subitem-row", function(){
+    var parent = state.wowItems.find(function(w){ return w.id === parentId; });
+    if(!parent) return;
+    var ids = $all(".wow-subitem-row", subWrap).map(function(r){ return r.getAttribute("data-id"); });
+    ids.forEach(function(id, idx){
+      var s = parent.subItems.find(function(x){ return x.id === id; });
+      if(s) s.order = idx;
+    });
+    saveData();
+  });
+}
+
+function openWowItemModal(itemId){
+  var editing = !!itemId;
+  var item = editing ? state.wowItems.find(function(w){ return w.id === itemId; }) : null;
+
+  var body = el("div", {}, []);
+  var titleField = fieldInput({ id:"wf-title", label:"Title", required:true, value: item ? item.title : "", placeholder:"e.g. Code Review Standards" });
+  var detailsField = el("div", { class:"field" }, [
+    el("label", { for:"wf-details" }, ["Details (optional)"]),
+    (function(){
+      var t = el("textarea", { class:"input", id:"wf-details", rows:"3", placeholder:"Add context or guidance for this item…" });
+      t.value = item ? (item.details || "") : "";
+      return t;
+    })()
+  ]);
+  body.appendChild(titleField.field);
+  body.appendChild(detailsField);
+
+  openModal({
+    title: editing ? "Edit Item" : "Add Item",
+    body: body,
+    confirmLabel: editing ? "Save Changes" : "Add Item",
+    onConfirm:function(){
+      var title = titleField.input.value.trim();
+      if(!title){ setFieldError(titleField, "Title is required."); return false; }
+      clearFieldError(titleField);
+      var details = $("#wf-details").value.trim();
+      if(editing){
+        item.title = title; item.details = details;
+        toast("Item updated");
+      } else {
+        state.wowItems.push({ id:uid("wow"), title:title, details:details, order: state.wowItems.length, expanded:true, subItems:[] });
+        toast("Item added");
+      }
+      saveData();
+      refreshCurrentView();
+      return true;
+    }
+  });
+}
+
+function openWowSubItemModal(parentId, subId){
+  var parent = state.wowItems.find(function(w){ return w.id === parentId; });
+  if(!parent) return;
+  var editing = !!subId;
+  var sub = editing ? parent.subItems.find(function(s){ return s.id === subId; }) : null;
+
+  var body = el("div", {}, []);
+  var titleField = fieldInput({ id:"wsf-title", label:"Title", required:true, value: sub ? sub.title : "", placeholder:"e.g. All PRs require 1 approval" });
+  var detailsField = el("div", { class:"field" }, [
+    el("label", { for:"wsf-details" }, ["Details (optional)"]),
+    (function(){
+      var t = el("textarea", { class:"input", id:"wsf-details", rows:"3", placeholder:"Add context or guidance…" });
+      t.value = sub ? (sub.details || "") : "";
+      return t;
+    })()
+  ]);
+  body.appendChild(titleField.field);
+  body.appendChild(detailsField);
+
+  openModal({
+    title: editing ? "Edit Sub-item" : ("Add Sub-item to \u201c" + parent.title + "\u201d"),
+    body: body,
+    confirmLabel: editing ? "Save Changes" : "Add Sub-item",
+    onConfirm:function(){
+      var title = titleField.input.value.trim();
+      if(!title){ setFieldError(titleField, "Title is required."); return false; }
+      clearFieldError(titleField);
+      var details = $("#wsf-details").value.trim();
+      if(editing){
+        sub.title = title; sub.details = details;
+        toast("Sub-item updated");
+      } else {
+        parent.subItems.push({ id:uid("sub"), title:title, details:details, order: parent.subItems.length });
+        parent.expanded = true;
+        toast("Sub-item added");
+      }
+      saveData();
+      refreshCurrentView();
+      return true;
+    }
+  });
+}
+
+function confirmDeleteWowItem(itemId){
+  var item = state.wowItems.find(function(w){ return w.id === itemId; });
+  if(!item) return;
+  var subCount = item.subItems.length;
+  openConfirmModal({
+    title:"Delete this item?",
+    body: "\u201c" + item.title + "\u201d" + (subCount > 0 ? " and its " + subCount + " sub-item" + (subCount === 1 ? "" : "s") : "") + " will be permanently removed. This can't be undone.",
+    confirmLabel:"Delete item",
+    danger:true,
+    onConfirm:function(){
+      state.wowItems = state.wowItems.filter(function(w){ return w.id !== itemId; });
+      saveData();
+      refreshCurrentView();
+      toast(item.title + " deleted");
+    }
+  });
+}
+
+function confirmDeleteWowSubItem(parentId, subId){
+  var parent = state.wowItems.find(function(w){ return w.id === parentId; });
+  if(!parent) return;
+  var sub = parent.subItems.find(function(s){ return s.id === subId; });
+  if(!sub) return;
+  openConfirmModal({
+    title:"Delete this sub-item?",
+    body:"\u201c" + sub.title + "\u201d will be permanently removed. This can't be undone.",
+    confirmLabel:"Delete sub-item",
+    danger:true,
+    onConfirm:function(){
+      parent.subItems = parent.subItems.filter(function(s){ return s.id !== subId; });
+      saveData();
+      refreshCurrentView();
+      toast(sub.title + " deleted");
+    }
+  });
+}
+
+/* ============================================================
    SETTINGS VIEW
    ============================================================ */
 function renderSettingsView(){
@@ -2222,7 +2680,7 @@ function renderAboutView(){
     { num: state.links.length, label:"Links" },
     { num: state.categories.length, label:"Categories" },
     { num: state.links.filter(function(l){return l.favorite;}).length, label:"Favorites" },
-    { num: state.recent.length, label:"Recent items" }
+    { num: state.wowItems.length, label:"WOW items" }
   ];
   stats.forEach(function(s){
     box.appendChild(el("div", { class:"stat-box" }, [
@@ -2457,6 +2915,7 @@ function refreshCurrentView(){
   if(currentView === "home") renderHome();
   else if(currentView === "links") renderLinksTable();
   else if(currentView === "categories") renderCategoriesView();
+  else if(currentView === "wow") renderWowView();
   else if(currentView === "settings") renderSettingsView();
   else if(currentView === "about") renderAboutView();
   // category grid / quick access on home may reference categories changed elsewhere
@@ -2545,6 +3004,7 @@ function wireEvents(){
 
   $("[data-action='add-link']").addEventListener("click", function(){ openLinkModal(); });
   $("[data-action='add-category']").addEventListener("click", function(){ openCategoryModal(); });
+  $("[data-action='add-wow-item']").addEventListener("click", function(){ openWowItemModal(); });
 
   $("#linksSearchInput").addEventListener("input", debounce(function(e){
     linksFilterState.search = e.target.value;
@@ -2592,6 +3052,107 @@ function scrollActiveIntoView(){
 }
 
 /* ============================================================
+   PWA: SERVICE WORKER + INSTALL PROMPT
+   ============================================================ */
+var deferredInstallPrompt = null;
+var INSTALL_DISMISS_KEY = "launchpad_install_dismissed_at";
+var INSTALL_DISMISS_DAYS = 14;
+
+function isStandalone(){
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+}
+function isIOS(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1); // iPadOS 13+ reports as Mac
+}
+function recentlyDismissed(){
+  var raw = localStorage.getItem(INSTALL_DISMISS_KEY);
+  if(!raw) return false;
+  var elapsedDays = (Date.now() - parseInt(raw, 10)) / 86400000;
+  return elapsedDays < INSTALL_DISMISS_DAYS;
+}
+function dismissInstallBanner(remember){
+  $("#installBanner").hidden = true;
+  if(remember) localStorage.setItem(INSTALL_DISMISS_KEY, String(Date.now()));
+}
+function showInstallBanner(mode){
+  if(isStandalone() || recentlyDismissed()) return;
+  var banner = $("#installBanner");
+  var btn = $("#installBannerBtn");
+  if(mode === "ios"){
+    $("#installBannerDesc").textContent = "Tap the Share icon, then \u201cAdd to Home Screen.\u201d";
+    btn.style.display = "none";
+  } else {
+    $("#installBannerDesc").textContent = "Add it to your home screen for one-tap access, even offline.";
+    btn.style.display = "";
+  }
+  banner.hidden = false;
+}
+function initPWA(){
+  if("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("./sw.js").catch(function(err){
+        console.info("Launchpad: service worker registration skipped —", err.message);
+      });
+    });
+  }
+
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    showInstallBanner("standard");
+  });
+
+  window.addEventListener("appinstalled", function(){
+    dismissInstallBanner(false);
+    deferredInstallPrompt = null;
+    toast("Launchpad installed — look for it on your home screen.");
+  });
+
+  $("#installBannerBtn").addEventListener("click", function(){
+    if(!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(function(choice){
+      dismissInstallBanner(choice.outcome === "dismissed");
+      deferredInstallPrompt = null;
+    });
+  });
+  $("#installBannerDismiss").addEventListener("click", function(){
+    dismissInstallBanner(true);
+  });
+
+  if(isIOS() && !isStandalone() && !recentlyDismissed()){
+    // Safari never fires beforeinstallprompt — show manual instructions instead.
+    setTimeout(function(){ showInstallBanner("ios"); }, 1200);
+  }
+
+  syncInstallSettingsRow();
+  window.addEventListener("appinstalled", syncInstallSettingsRow);
+
+  $("#installSettingsBtn").addEventListener("click", function(){
+    if(deferredInstallPrompt){
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then(function(){ deferredInstallPrompt = null; syncInstallSettingsRow(); });
+    } else if(isIOS()){
+      toast("Tap the Share icon, then \u201cAdd to Home Screen.\u201d");
+    } else {
+      toast("Your browser will offer an install option once available.");
+    }
+  });
+}
+
+function syncInstallSettingsRow(){
+  var row = $("#installSettingsRow");
+  if(!row) return;
+  if(isStandalone()){
+    row.querySelector(".sr-title").textContent = "Installed";
+    $("#installSettingsDesc").textContent = "Launchpad is running as an installed app.";
+    $("#installSettingsBtn").disabled = true;
+    $("#installSettingsBtn").textContent = "Installed";
+  }
+}
+
+/* ============================================================
    INIT
    ============================================================ */
 function init(){
@@ -2600,6 +3161,7 @@ function init(){
   document.documentElement.style.setProperty("--cols", state.settings.linksPerRow || 3);
   updateAvatarInitials();
   wireEvents();
+  initPWA();
   navigateTo("home");
 }
 
